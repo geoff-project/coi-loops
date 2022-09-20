@@ -1,0 +1,31 @@
+[build-system]
+requires = [
+    'setuptools >= 42',
+    'setuptools-scm[toml] ~= 5.0',
+    'wheel',
+]
+build-backend = 'setuptools.build_meta'
+
+[tool.setuptools_scm]
+
+[tool.black]
+target-version = ['py37', 'py38']
+include = '\.pyi?$'
+
+[tool.isort]
+profile = 'black'
+known_first_party = ['cernml']
+
+[tool.pytest.ini_options]
+addopts = '--doctest-modules --doctest-glob=*.md --ignore=src/cernml/lsa_utils/'
+testpaths = ['tests', 'src', 'docs']
+
+[tool.pylint.FORMAT]
+ignore-long-lines = '<?https?://\S+>?$'
+
+[tool.pylint.REPORTS]
+reports = false
+score = false
+
+[tool.pylint.'MESSAGES CONTROL']
+disable = ['similarities']

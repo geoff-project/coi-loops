@@ -1,0 +1,83 @@
+include:
+  - template: Security/SAST.gitlab-ci.yml
+  - project: acc-co/devops/python/acc-py-devtools
+    file: acc_py_devtools/templates/gitlab-ci/python.yml
+
+variables:
+  project_dir: src/cernml/
+  project_name: cernml-coi-utils
+  PY_VERSION: "3.7"
+
+# Build: Create a wheel to speed up installation.
+
+build_wheel:
+  extends:
+    - .acc_py_build_wheel
+
+# Template for interaction with Conda.
+
+.base_conda:
+  image: continuumio/miniconda3
+  variables:
+    env_spec: INSERT_CONDA_REQUIREMENTS
+  before_script:
+    - conda create -n test_env --yes --quiet -c conda-forge pip $env_spec
+    - source activate test_env
+
+# Test: Run linters and unit tests. Run tests both in-tree and out-of-tree.
+
+.base_test:
+  extends: .base_conda
+  stage: test
+  variables:
+    env_spec: python=3.7 openjdk=11 JPype1=1.0
+
+test_lint:
+  extends: .base_test
+  script:
+    - python -m pip install -e '.[lint]'
+    - cd ${project_root}
+    - ./run_linters.sh ${project_dir}/*
+
+test_dev:
+  extends: .base_test
+  script:
+    - pip install -e '.[test]'
+    - cd ${project_root}
+    - pytest --cov=${project_dir} --junitxml=report.xml
+  artifacts:
+    expire_in: 30 days
+    reports:
+      junit: ${project_root}/report.xml
+
+test_install:
+  extends: .base_test
+  script:
+    - pip install -e '.[test]'
+    - cd ${project_root}/tests
+    - pytest
+
+sast:
+  stage: test
+
+# Docs: Build and publish docs, which has to import all packages.
+
+.base_docs:
+  extends: .base_conda
+  variables:
+    env_spec: python=3.7 openjdk=11 JPype1=1.0 graphviz curl
+
+build_docs:
+  extends:
+    - .acc_py_build_docs
+    - .base_docs
+
+build_docs_on_tag:
+  extends:
+    - .acc_py_build_docs_on_tag
+    - .base_docs
+
+# Deploy: Publish the wheel on acc-py-repo.cern.ch.
+
+release_wheel:
+  extends: .acc_py_release_wheel
