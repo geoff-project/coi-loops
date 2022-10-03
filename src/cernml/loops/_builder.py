@@ -230,14 +230,17 @@ class RunFactory:
     optimizer_factory: t.Optional[OptimizerFactory]
     callback: t.Optional[_callbacks.Callback]
 
-    def __init__(self) -> None:
+    def __init__(self, kwargs_spec: t.Optional[ProblemKwargsSpec] = None) -> None:
         self.token_source = TokenSource()
-        self._problem_factory = ProblemFactory()
+        self._problem_factory = ProblemFactory(kwargs_spec)
         self._problem_factory.set_kwarg("cancellation_token", self.token_source.token)
         self.render_mode = None
         self.skeleton_points = None
         self.optimizer_factory = None
         self.callback = None
+
+    def select_problem(self, name: str) -> None:
+        self._problem_factory.select_problem(name)
 
     def set_problem_kwarg(self, name: str, value: t.Any) -> None:
         self._problem_factory.set_kwarg(name, value)
