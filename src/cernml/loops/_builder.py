@@ -6,10 +6,9 @@ import typing as t
 from logging import getLogger
 
 import numpy as np
-from gym.envs.registration import EnvSpec
-
 from cernml import coi
 from cernml.coi.cancellation import TokenSource
+from gym.envs.registration import EnvSpec
 
 from . import _callbacks, _jobs
 
@@ -198,6 +197,7 @@ class ProblemFactory:
             return self._spec
         if self._problem_id:
             self._spec = coi.spec(self._problem_id)
+            return self._spec
         raise NoProblemSelected()
 
     def get_metadata(self) -> Metadata:
