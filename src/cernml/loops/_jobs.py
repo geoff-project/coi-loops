@@ -267,15 +267,14 @@ class _AbstractRunner(ABC):
 
 
 class _SingleOptimizableRunner(_AbstractRunner):
-    problem: _interfaces.SingleOptimizable
-
     def __init__(self, data: RunParams) -> None:
         super().__init__(data)
         self._initial_point = self._get_initial_point()
 
     def _get_initial_point(self) -> np.ndarray:
-        bounds = self.problem.optimization_space
-        unvalidated_x0 = self.problem.get_initial_params()
+        problem = t.cast(_interfaces.SingleOptimizable, self.data.problem)
+        bounds = problem.optimization_space
+        unvalidated_x0 = problem.get_initial_params()
         try:
             return validate_x0(unvalidated_x0, bounds)
         except BadInitialPoint as exc:
