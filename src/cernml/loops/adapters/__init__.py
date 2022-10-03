@@ -11,10 +11,11 @@ import logging
 import typing as t
 
 import numpy as np
-import scipy.optimize
 
 if t.TYPE_CHECKING:
-    # pylint: disable = unused-import
+    # pylint: disable = unused-import, ungrouped-imports
+    from scipy.optimize import Bounds
+
     from .._constraints import Constraint
 
 __all__ = [
@@ -75,7 +76,7 @@ class OptimizerFactory(abc.ABC):
     @abc.abstractmethod
     def make_solve_func(
         self,
-        bounds: scipy.optimize.Bounds,
+        bounds: Bounds,
         constraints: t.Sequence[Constraint],
     ) -> SolveFunc:
         raise NotImplementedError()
