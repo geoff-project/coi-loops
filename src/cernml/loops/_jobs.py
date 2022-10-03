@@ -14,6 +14,7 @@ from logging import getLogger
 import gym
 import numpy as np
 import scipy.optimize
+
 from cernml.coi import Problem, cancellation
 
 from . import _callbacks as _cb
@@ -136,7 +137,7 @@ class _AbstractRunner(ABC):
         ) -> None:
             if not success:
                 status = _cb.OptimizeStatus.FAILURE
-            msg = exc.msg if exc else message
+            msg = str(exc) if exc else message
             self.data.callback.run_end(_cb.RunEndMessage(status=status, message=msg))
 
         with self._catching_exceptions(finalizer):
