@@ -14,7 +14,6 @@ from logging import getLogger
 import gym
 import numpy as np
 import scipy.optimize
-
 from cernml.coi import Problem, cancellation
 
 from . import _callbacks as _cb
@@ -84,15 +83,15 @@ class Run:
     ) -> None:
         self._data = run_params
         self._runner: _AbstractRunner
-        if isinstance(run_params.problem, _interfaces.FunctionOptimizable):
+        if isinstance(run_params.problem.unwrapped, _interfaces.FunctionOptimizable):
             assert skeleton_points is not None
             self._runner = _FunctionOptimizableRunner(
                 run_params,
                 skeleton_points=skeleton_points,
             )
         assert isinstance(
-            run_params.problem, _interfaces.SingleOptimizable
-        ), run_params.problem
+            run_params.problem.unwrapped, _interfaces.SingleOptimizable
+        ), run_params.problem.unwrapped
         self._runner = _SingleOptimizableRunner(run_params)
 
     @property

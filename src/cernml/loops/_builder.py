@@ -248,15 +248,15 @@ class RunFactory:
     def build(self) -> _jobs.Run:
         problem = self._problem_factory.get_problem()
         params = self._build_params(problem)
-        if isinstance(problem, coi.FunctionOptimizable):
+        if isinstance(problem.unwrapped, coi.FunctionOptimizable):
             if self.skeleton_points is None or not np.shape(self.skeleton_points):
                 raise CannotStartRun("no skeleton points selected")
         return _jobs.Run(params, self.skeleton_points)
 
     def _build_params(self, problem: coi.Problem) -> _jobs.RunParams:
         assert isinstance(
-            problem, (coi.SingleOptimizable, coi.FunctionOptimizable)
-        ), problem
+            problem.unwrapped, (coi.SingleOptimizable, coi.FunctionOptimizable)
+        ), problem.unwrapped
         if self.render_mode:
             allowed_render_modes = self._problem_factory.get_metadata().render_modes
             if self.render_mode not in allowed_render_modes:
