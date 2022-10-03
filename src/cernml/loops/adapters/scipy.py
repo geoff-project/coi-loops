@@ -50,7 +50,7 @@ class Cobyla(OptimizerFactory, coi.Configurable):
                 fun=res.fun,
                 success=res.success,
                 message=res.message,
-                nit=res.nit,
+                nit=res.nfev,
                 nfev=res.nfev,
             )
 

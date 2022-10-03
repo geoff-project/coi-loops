@@ -58,7 +58,7 @@ class SkoptGpOptimize(OptimizerFactory, coi.Configurable):
             )
             return OptimizeResult(
                 x=np.asarray(res.x),
-                fun=res.x,
+                fun=res.fun,
                 success=True,
                 message="",
                 nit=len(res.func_vals),
