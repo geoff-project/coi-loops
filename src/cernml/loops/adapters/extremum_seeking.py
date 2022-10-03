@@ -1,3 +1,5 @@
+"""The Extremum Seeking algorithm provided by :mod:`cernml.extremum_seeking`."""
+
 from __future__ import annotations
 
 import typing as t

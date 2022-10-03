@@ -1,3 +1,5 @@
+"""The BOBYQA algorithm as provided by Py-BOBYQA."""
+
 from __future__ import annotations
 
 import typing as t

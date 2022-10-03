@@ -14,11 +14,16 @@ from logging import getLogger
 import gym
 import numpy as np
 import scipy.optimize
+
 from cernml.coi import Problem, cancellation
 
-from . import _adapters
 from . import _callbacks as _cb
 from . import _catching, _constraints, _interfaces
+
+if t.TYPE_CHECKING:
+    # pylint: disable = import-error, unused-import, ungrouped-imports
+    from .adapters import OptimizerFactory
+
 
 LOG = getLogger(__name__)
 
@@ -56,7 +61,7 @@ class RunParams:
     no longer change once the :class:`Run` object has been created.
     """
 
-    optimizer_factory: _adapters.OptimizerFactory
+    optimizer_factory: OptimizerFactory
     problem: _interfaces.AnyOptimizable
     render_mode: t.Optional[str]
     token_source: cancellation.TokenSource

@@ -1,3 +1,5 @@
+"""Optimizers provided by the Scipy package."""
+
 from __future__ import annotations
 
 import typing as t

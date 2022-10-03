@@ -58,7 +58,7 @@ class OptimizeResult:
         nfev: The number of evaluations of the objective function.
     """
 
-    x: np.ndarray
+    x: np.ndarray  # pylint: disable=invalid-name
     fun: float
     success: bool
     message: str
@@ -71,6 +71,7 @@ SolveFunc = t.Callable[[Objective, np.ndarray], OptimizeResult]
 
 
 class OptimizerFactory(abc.ABC):
+    # pylint: disable = too-few-public-methods
     @abc.abstractmethod
     def make_solve_func(
         self,

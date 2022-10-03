@@ -1,3 +1,4 @@
+"""GUI-less optimization loops for the Common Optimization Interfaces."""
 from ._buffers import LimitedStepBuffer, Step, StepBuffer
 from ._builder import (
     CannotInstantiateProblem,

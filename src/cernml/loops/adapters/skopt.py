@@ -1,3 +1,5 @@
+"""Bayesian optimization as provided by scikit-opt."""
+
 from __future__ import annotations
 
 import typing as t

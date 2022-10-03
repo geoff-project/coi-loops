@@ -263,6 +263,7 @@ class StepBuffer(t.Sequence[Step]):
 
         Args: TODO
         """
+        # pylint: disable = too-many-arguments
         self._buffer.append(
             _make_step(iteration, skeleton_point, params, objective, timestamp)
         )

@@ -1,3 +1,5 @@
+"""Factory pattern for :class:`Run`."""
+
 from __future__ import annotations
 
 import typing as t
@@ -9,7 +11,11 @@ from gym.envs.registration import EnvSpec
 from cernml import coi
 from cernml.coi.cancellation import TokenSource
 
-from . import _adapters, _callbacks, _jobs
+from . import _callbacks, _jobs
+
+if t.TYPE_CHECKING:
+    # pylint: disable = import-error, unused-import, ungrouped-imports
+    from .adapters import OptimizerFactory
 
 LOG = getLogger(__name__)
 
@@ -221,7 +227,7 @@ class RunFactory:
     problem_factory: ProblemFactory
     render_mode: t.Optional[str]
     skeleton_points: t.Optional[np.ndarray]
-    optimizer_factory: t.Optional[_adapters.OptimizerFactory]
+    optimizer_factory: t.Optional[OptimizerFactory]
     callback: t.Optional[_callbacks.Callback]
 
     def __init__(self) -> None:

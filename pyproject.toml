@@ -17,7 +17,7 @@ profile = 'black'
 known_first_party = ['cernml']
 
 [tool.pytest.ini_options]
-addopts = '--doctest-modules --doctest-glob=*.md --ignore=src/cernml/lsa_utils/'
+addopts = '--doctest-modules --doctest-glob=*.md'
 testpaths = ['tests', 'src', 'docs']
 
 [tool.pylint.FORMAT]
@@ -28,4 +28,9 @@ reports = false
 score = false
 
 [tool.pylint.'MESSAGES CONTROL']
-disable = ['similarities']
+disable = [
+    'fixme',
+    'similarities',
+    'missing-class-docstring',
+    'missing-function-docstring',
+]

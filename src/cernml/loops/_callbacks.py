@@ -10,7 +10,9 @@ import typing as t
 import gym
 import numpy as np
 
-from ._adapters import OptimizeResult
+if t.TYPE_CHECKING:
+    # pylint: disable = import-error, unused-import, ungrouped-imports
+    from .adapters import OptimizeResult
 
 
 class ExplicitAction(enum.Enum):
