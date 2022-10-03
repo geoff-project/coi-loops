@@ -142,7 +142,7 @@ class _AbstractRunner(ABC):
 
         with self._catching_exceptions(finalizer):
             allowed_render_modes = tuple(
-                type(self.data.problem).metadata.get("render.modes", [])
+                self.data.problem.metadata.get("render.modes", [])
             )
             self.data.callback.run_begin(
                 _cb.RunBeginMessage(
