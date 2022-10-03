@@ -159,6 +159,8 @@ class _AbstractRunner(ABC):
             raise _catching.BenignCancelledError()
         bounds = self.current_opt_space
         assert bounds is not None
+        # Cast and clip parameters.
+        params = np.asarray(params, dtype=bounds.dtype)
         if params not in bounds:
             LOG.warning("clipping actors into bounds: %s", params)
         params = np.clip(params, bounds.low, bounds.high)
