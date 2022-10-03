@@ -26,6 +26,7 @@ class SkoptGpOptimize(OptimizerFactory, coi.Configurable):
     """Adapter for Bayesian optimization via scikit-optimize."""
 
     def __init__(self) -> None:
+        self.verbose = True
         self.check_convergence = False
         self.min_objective = 0.0
         self.n_calls = 100
@@ -53,7 +54,7 @@ class SkoptGpOptimize(OptimizerFactory, coi.Configurable):
                 acq_func=self.acq_func,
                 kappa=self.kappa_param,
                 xi=self.xi_param,
-                verbose=True,
+                verbose=self.verbose,
                 callback=callback,
             )
             return OptimizeResult(
@@ -106,6 +107,11 @@ class SkoptGpOptimize(OptimizerFactory, coi.Configurable):
             "values.",
         )
         config.add(
+            "verbose",
+            self.verbose,
+            help="If enabled, print progress to stdout",
+        )
+        config.add(
             "check_convergence",
             self.check_convergence,
             help="Enable convergence check at every iteration. "
@@ -128,6 +134,7 @@ class SkoptGpOptimize(OptimizerFactory, coi.Configurable):
         self.acq_func = values.acq_func
         self.kappa_param = values.kappa_param
         self.xi_param = values.xi_param
+        self.verbose = values.verbose
         self.check_convergence = values.check_convergence
         self.min_objective = values.min_objective
 
