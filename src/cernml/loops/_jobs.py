@@ -62,7 +62,7 @@ class RunParams:
     """
 
     optimizer_factory: OptimizerFactory
-    problem: _interfaces.AnyOptimizable
+    problem: Problem
     render_mode: t.Optional[str]
     token_source: cancellation.TokenSource
     callback: _cb.Callback
@@ -117,10 +117,11 @@ class Run:
 
 class _AbstractRunner(ABC):
     def __init__(self, data: RunParams) -> None:
+        problem = t.cast(_interfaces.AnyOptimizable, data.problem)
         self.data = data
         self.wrapped_constraints = [
             _constraints.CachedNonlinearConstraint.from_any_constraint(c)
-            for c in data.problem.constraints
+            for c in problem.constraints
         ]
         # State information used during optimization.
         self.current_opt_space: t.Optional[gym.spaces.Box] = None
@@ -180,12 +181,13 @@ class _AbstractRunner(ABC):
         objective = self.compute_loss(normalized_action)
         if np.isnan(self.initial_objective):
             self.initial_objective = objective
+        problem = t.cast(_interfaces.AnyOptimizable, self.data.problem)
         self.data.callback.objective_evaluated(
             _cb.ObjectiveEvalMessage(
                 index=self.current_iteration,
                 param_values=normalized_action,
                 objective=objective,
-                objective_range=self.data.problem.objective_range,
+                objective_range=problem.objective_range,
                 optimization_space=self.current_opt_space,
             )
         )

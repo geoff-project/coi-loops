@@ -11,7 +11,6 @@ import numpy as np
 from matplotlib import pyplot
 
 from cernml import coi, loops
-from cernml.coi import cancellation
 
 # pylint: disable = unused-import
 from cernml.loops.adapters import ALL_OPTIMIZERS

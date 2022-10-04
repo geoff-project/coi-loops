@@ -87,6 +87,8 @@ class RandomSampleOptimizer(OptimizerFactory):
     should not be used in production.
     """
 
+    # pylint: disable = too-few-public-methods
+
     def __init__(self, maxfun: t.Optional[int] = 10) -> None:
         self.maxfun = maxfun
 

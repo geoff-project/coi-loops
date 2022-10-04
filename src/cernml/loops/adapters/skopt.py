@@ -25,6 +25,8 @@ __all__ = [
 class SkoptGpOptimize(OptimizerFactory, coi.Configurable):
     """Adapter for Bayesian optimization via scikit-optimize."""
 
+    # pylint: disable = too-many-instance-attributes
+
     def __init__(self) -> None:
         self.verbose = True
         self.check_convergence = False

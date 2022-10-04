@@ -6,9 +6,10 @@ import typing as t
 from logging import getLogger
 
 import numpy as np
+from gym.envs.registration import EnvSpec
+
 from cernml import coi
 from cernml.coi.cancellation import TokenSource
-from gym.envs.registration import EnvSpec
 
 from . import _callbacks, _jobs
 
