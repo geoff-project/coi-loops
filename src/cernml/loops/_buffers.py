@@ -11,6 +11,8 @@ from datetime import datetime, timezone
 
 import numpy as np
 
+from . import _callbacks as _cb
+
 # TODO: Add newtype CycleTime to COI.
 # TODO: Add Wrapper class for SingleOptimizable and FunctionOptimizable.
 
@@ -434,6 +436,41 @@ class LimitedStepBuffer(StepBuffer):
         for item in iterator:
             self._buffer[self._append_ptr] = item
             self._append_ptr = (self._append_ptr + 1) % self._maxlen
+
+
+class RecordSteps(_cb.Callback):
+    """Callback that stores each iteration in a `StepBuffer`.
+
+    Args:
+        name: The name of the callback.
+        step_buffer: If passed and not None, the buffer to use for
+            storage. Otherwise, a new buffer is instantiated.
+
+    Attributes:
+        step_buffer: The buffer into which steps are being stores.
+    """
+
+    def __init__(self, name: str, step_buffer: t.Optional[StepBuffer] = None) -> None:
+        super().__init__(name)
+        if step_buffer is None:
+            step_buffer = StepBuffer()
+        self.step_buffer = step_buffer
+        self.current_skeleton_point = np.nan
+
+    def optimization_begin(self, msg: _cb.OptBeginMessage) -> None:
+        info = msg.skeleton_point_info
+        if info is not None:
+            self.current_skeleton_point = info.current_point
+        else:
+            self.current_skeleton_point = np.nan
+
+    def objective_evaluated(self, msg: _cb.ObjectiveEvalMessage) -> None:
+        self.step_buffer.append_step(
+            iteration=msg.index,
+            skeleton_point=self.current_skeleton_point,
+            params=msg.param_values,
+            objective=msg.objective,
+        )
 
 
 def _assert_index_list(key: t.Union[int, slice, t.Sequence[int]]) -> None:
