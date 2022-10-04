@@ -75,8 +75,45 @@ class OptimizerFactory(abc.ABC):
     # pylint: disable = too-few-public-methods
     @abc.abstractmethod
     def make_solve_func(
-        self,
-        bounds: Bounds,
-        constraints: t.Sequence[Constraint],
+        self, bounds: Bounds, constraints: t.Sequence[Constraint]
     ) -> SolveFunc:
         raise NotImplementedError()
+
+
+class RandomSampleOptimizer(OptimizerFactory):
+    """A trivial optimizer that simply picks random points.
+
+    This optimizer serves for testing purposes. It is not registered and
+    should not be used in production.
+    """
+
+    def __init__(self, maxfun: t.Optional[int] = 10) -> None:
+        self.maxfun = maxfun
+
+    def make_solve_func(
+        self, bounds: Bounds, constraints: t.Sequence[Constraint]
+    ) -> SolveFunc:
+        def solve(objective: Objective, x_0: np.ndarray) -> OptimizeResult:
+            iteration = 0
+            params = x_0
+            best_params = x_0
+            best_objective_value = np.nan
+            while (self.maxfun is None) or iteration < self.maxfun:
+                objective_value = objective(params)
+                # Careful: Use negated check here because np.nan
+                # comparison with anything is always False.
+                if not objective_value >= best_objective_value:
+                    best_params = params
+                    best_objective_value = objective_value
+                params = np.random.uniform(bounds.lb, bounds.ub)
+                iteration += 1
+            return OptimizeResult(
+                x=best_params,
+                fun=best_objective_value,
+                success=True,
+                message="",
+                nit=iteration,
+                nfev=iteration,
+            )
+
+        return solve
