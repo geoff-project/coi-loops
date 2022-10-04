@@ -56,50 +56,49 @@ class StepBuffer(t.Sequence[Step]):
 
     Given this example environment:
 
-        >>> import gym
-        >>> from gym.wrappers import TimeLimit
-        >>> class SimpleEnv(gym.Env):
-        ...     observation_space = gym.spaces.Box(-1,1,shape=(2,))
-        ...     action_space = gym.spaces.Box(-1,1,shape=(2,))
+        >>> from cernml import coi
+        >>> from gym.spaces import Box
+        >>> class SimpleEnv(coi.SingleOptimizable):
+        ...     optimization_space = Box(-1,1,shape=(2,))
         ...     def __init__(self):
-        ...         self.pos = None
-        ...     def reset(self):
-        ...         self.pos = self.observation_space.sample()
-        ...         return self.pos.copy()
-        ...     def step(self, action):
-        ...         self.pos += action
-        ...         dist = sum(self.pos**2)
-        ...         return self.pos.copy(), -dist, False, {}
-        ...     def seed(self, seed=None):
-        ...         return sum([self.observation_space.seed(seed),
-        ...                     self.action_space.seed(seed)], [])
+        ...         self.goal = self.optimization_space.sample()
+        ...     def get_initial_params(self):
+        ...         space = self.optimization_space
+        ...         self.goal = space.sample()
+        ...         return np.zeros(space.shape, space.dtype)
+        ...     def compute_single_objective(self, params):
+        ...         dist = np.linalg.norm(params - self.goal)
+        ...         return dist
+        >>> coi.register("SimpleEnv-v0", entry_point=SimpleEnv)
 
     `StepBuffer` can be filled like this:
 
-        >>> env = RecordSteps(TimeLimit(SimpleEnv(), 4))
-        >>> for _ in range(10):
-        ...     obs, done = env.reset(), False
-        ...     while not done:
-        ...         action = env.action_space.sample()
-        ...         obs, _, done, _ = env.step(action)
-        >>> buf = env.step_buffer
+        >>> from cernml import loops
+        >>> from cernml.coi.cancellation import TokenSource
+        >>> from cernml.loops.adapters import RandomSampleOptimizer
+        >>> factory = loops.RunFactory()
+        >>> factory.select_problem("SimpleEnv-v0")
+        >>> factory.optimizer_factory = RandomSampleOptimizer(maxfun=39)
+        >>> factory.callback = recorder = RecordSteps("Demo")
+        >>> factory.build().run_full_optimization()
+        >>> buf = recorder.step_buffer
+        >>> # Note that run_full_optimization() always does one
+        >>> # extra evaluation at the optimal point.
         >>> buf
         <StepBuffer of 40 elements>
 
     It grants access to rows and columns of its data:
 
-        >>> buf.get_obs().shape
+        >>> buf.get_iteration().shape
+        (40,)
+        >>> buf.get_params().shape
         (40, 2)
-        >>> buf.get_action().shape
-        (40, 2)
-        >>> buf.get_reward().shape
+        >>> buf.get_objective().shape
         (40,)
         >>> all(isinstance(item, Step) for item in buf)
         True
-        >>> (buf.get_obs()[1:4] == buf.get_next_obs()[:3]).all()
+        >>> all(np.isnan(buf.get_skeleton_point()))
         True
-        >>> sum(buf.get_done())
-        10
 
     A `StepBuffer` can be shuffled and sampled for simplified data
     access:
@@ -131,6 +130,9 @@ class StepBuffer(t.Sequence[Step]):
         True
         >>> all(left == right for left, right in zip(buf, copy2))
         True
+
+    And steps can be removed:
+
         >>> copy1.clear()
         >>> del copy2[:]
         >>> len(copy1) == len(copy2) == 0
@@ -168,15 +170,15 @@ class StepBuffer(t.Sequence[Step]):
 
     @t.overload
     def __getitem__(self, key: int) -> Step:
-        ...
+        ...  # pragma: no cover
 
     @t.overload
     def __getitem__(self, key: slice) -> "StepBuffer":
-        ...
+        ...  # pragma: no cover
 
     @t.overload
     def __getitem__(self, key: t.Sequence[int]) -> "StepBuffer":
-        ...
+        ...  # pragma: no cover
 
     def __getitem__(
         self, key: t.Union[int, slice, t.Sequence[int]]
@@ -196,15 +198,15 @@ class StepBuffer(t.Sequence[Step]):
 
     @t.overload
     def __setitem__(self, key: int, value: Step) -> None:
-        ...
+        ...  # pragma: no cover
 
     @t.overload
     def __setitem__(self, key: slice, value: t.Iterable[Step]) -> None:
-        ...
+        ...  # pragma: no cover
 
     @t.overload
     def __setitem__(self, key: t.Sequence[int], value: t.Iterable[Step]) -> None:
-        ...
+        ...  # pragma: no cover
 
     def __setitem__(
         self,
@@ -323,30 +325,32 @@ class LimitedStepBuffer(StepBuffer):
     When constructing this buffer, you pass the maximum size. If you
     don't, it attempts to copy it from the `other` object.
 
-        >>> from collections import deque
         >>> buf = LimitedStepBuffer(maxlen=3)
+        >>> buf.maxlen
+        3
         >>> LimitedStepBuffer(buf).maxlen
         3
+        >>> from collections import deque
         >>> LimitedStepBuffer(deque(maxlen=3)).maxlen
         3
 
     When appending steps beyond the maximum size, this buffer starts
     overwriting old entries, starting at the oldest:
 
-        >>> buf.append(0, 0, 0, 0, False)
-        >>> buf.append(1, 1, 1, 1, False)
-        >>> buf.append(2, 2, 2, 2, False)
-        >>> buf.append(3, 3, 3, 3, False)
-        >>> buf.get_obs()
+        >>> buf.append_step(0, 0, 0, 0)
+        >>> buf.append_step(1, 1, 1, 1)
+        >>> buf.append_step(2, 2, 2, 2)
+        >>> buf.append_step(3, 3, 3, 3)
+        >>> buf.get_params()
         array([3, 1, 2])
 
     This also works at construction time:
 
         >>> smaller = LimitedStepBuffer(buf, maxlen=2)
-        >>> smaller.get_obs()
+        >>> smaller.get_params()
         array([2, 1])
         >>> smaller.extend(buf)
-        >>> smaller.get_obs()
+        >>> smaller.get_params()
         array([1, 2])
     """
 
@@ -374,15 +378,15 @@ class LimitedStepBuffer(StepBuffer):
 
     @t.overload
     def __setitem__(self, key: int, value: Step) -> None:
-        ...
+        ...  # pragma: no cover
 
     @t.overload
     def __setitem__(self, key: slice, value: t.Iterable[Step]) -> None:
-        ...
+        ...  # pragma: no cover
 
     @t.overload
     def __setitem__(self, key: t.Sequence[int], value: t.Iterable[Step]) -> None:
-        ...
+        ...  # pragma: no cover
 
     def __setitem__(self, key: t.Any, value: t.Any) -> None:
         if isinstance(key, slice):
