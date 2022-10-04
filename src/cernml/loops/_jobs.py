@@ -63,9 +63,9 @@ class RunParams:
 
     optimizer_factory: OptimizerFactory
     problem: Problem
+    callback: _cb.Callback
     render_mode: t.Optional[str]
     token_source: cancellation.TokenSource
-    callback: _cb.Callback
 
     @property
     def problem_id(self) -> str:
