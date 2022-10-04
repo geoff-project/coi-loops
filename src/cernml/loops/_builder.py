@@ -13,9 +13,9 @@ from cernml.coi.cancellation import TokenSource
 
 from . import _callbacks, _jobs
 
-if t.TYPE_CHECKING:
+if t.TYPE_CHECKING:  # pragma: no cover
     # pylint: disable = import-error, unused-import, ungrouped-imports
-    from .adapters import OptimizerFactory
+    from .adapters import OptimizerFactory  # pragma: no cover
 
 LOG = getLogger(__name__)
 

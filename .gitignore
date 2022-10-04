@@ -4,6 +4,7 @@ build/
 dist/
 *.egg-info/
 docs/html/
+.coverage
 
 # Vim-Gutentags temp files.
 tags

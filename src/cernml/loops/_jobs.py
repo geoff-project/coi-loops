@@ -20,9 +20,9 @@ from cernml.coi import Problem, cancellation
 from . import _callbacks as _cb
 from . import _catching, _constraints, _interfaces
 
-if t.TYPE_CHECKING:
+if t.TYPE_CHECKING:  # pragma: no cover
     # pylint: disable = import-error, unused-import, ungrouped-imports
-    from .adapters import OptimizerFactory
+    from .adapters import OptimizerFactory  # pragma: no cover
 
 
 LOG = getLogger(__name__)

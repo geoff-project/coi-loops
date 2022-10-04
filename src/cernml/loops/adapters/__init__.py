@@ -12,11 +12,11 @@ import typing as t
 
 import numpy as np
 
-if t.TYPE_CHECKING:
+if t.TYPE_CHECKING:  # pragma: no cover
     # pylint: disable = unused-import, ungrouped-imports
-    from scipy.optimize import Bounds
+    from scipy.optimize import Bounds  # pragma: no cover
 
-    from .._constraints import Constraint
+    from .._constraints import Constraint  # pragma: no cover
 
 __all__ = [
     "Objective",

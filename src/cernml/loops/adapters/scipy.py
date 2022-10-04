@@ -12,9 +12,9 @@ from cernml import coi
 from .._constraints import Constraint, NonlinearConstraint
 from . import Objective, OptimizeResult, OptimizerFactory, SolveFunc, register
 
-if t.TYPE_CHECKING:
+if t.TYPE_CHECKING:  # pragma: no cover
     # pylint: disable = unused-import
-    from scipy.optimize import Bounds
+    from scipy.optimize import Bounds  # pragma: no cover
 
 __all__ = [
     "Cobyla",
