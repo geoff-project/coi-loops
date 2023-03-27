@@ -16,8 +16,8 @@ optimizers to optimization problems defined via the [COI][CernML-COI].
 
 This repository can be found online on CERN's [Gitlab][].
 
-[Gitlab]: https://gitlab.cern.ch/be-op-ml-optimization/cernml-coi-loops/
-[CernML-COI]: https://gitlab.cern.ch/be-op-ml-optimization/cernml-coi/
+[Gitlab]: https://gitlab.cern.ch/geoff/cernml-coi-loops/
+[CernML-COI]: https://gitlab.cern.ch/geoff/cernml-coi/
 
 Table of Contents
 -----------------
