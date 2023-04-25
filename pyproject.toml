@@ -30,6 +30,7 @@ classifiers = [
     'Operating System :: OS Independent',
     'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3 :: Only',
 ]
 
@@ -51,18 +52,19 @@ examples = [
     'matplotlib ~= 3.0',
 ]
 lint = [
+    'cernml-coi-loops[examples]',
     'black',
     'mypy',
     'pycodestyle',
     'pylint',
-    # For `typing.Self`:
+    # For `Self` and `TypeGuard`:
     'typing-extensions>=4.0; python_version<"3.11"',
 ]
 
 [tool.setuptools_scm]
 
 [tool.black]
-target-version = ['py37', 'py38']
+target-version = ['py37', 'py38', 'py39']
 include = '\.pyi?$'
 
 [tool.isort]
