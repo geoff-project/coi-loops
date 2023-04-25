@@ -5,14 +5,14 @@ from __future__ import annotations
 import typing as t
 from logging import getLogger
 
-import numpy as np
 from gym.envs.registration import EnvSpec
 
 from cernml import coi
 from cernml.coi.cancellation import TokenSource
 
 from . import _callbacks, _jobs
-from ._interfaces import is_function_optimizable, is_any_optimizable
+from ._interfaces import AnyOptimizable, is_any_optimizable
+from ._skeleton_points import coerce_float_tuple, gather_skeleton_points
 
 if t.TYPE_CHECKING:  # pragma: no cover
     # pylint: disable = import-error, unused-import, ungrouped-imports
@@ -228,11 +228,13 @@ class ProblemFactory:
             raise CannotInstantiateProblem(self._problem_id) from exc
 
 
+F = t.TypeVar("F", bound=t.SupportsFloat)
+
+
 class RunFactory:
     token_source: TokenSource
     problem_factory: ProblemFactory
     render_mode: t.Optional[str]
-    skeleton_points: t.Optional[np.ndarray]
     optimizer_factory: t.Optional[OptimizerFactory]
     callback: t.Optional[_callbacks.Callback]
 
@@ -240,10 +242,18 @@ class RunFactory:
         self.token_source = TokenSource()
         self._problem_factory = ProblemFactory(kwargs_spec)
         self._problem_factory.set_kwarg("cancellation_token", self.token_source.token)
+        self._skeleton_points: t.Tuple[float, ...] = ()
         self.render_mode = None
-        self.skeleton_points = None
         self.optimizer_factory = None
         self.callback = None
+
+    @property
+    def skeleton_points(self) -> t.Tuple[float, ...]:
+        return self._skeleton_points
+
+    @skeleton_points.setter
+    def skeleton_points(self, collection: t.Collection[F]) -> None:
+        self._skeleton_points = coerce_float_tuple(collection)
 
     def select_problem(self, name: str) -> None:
         self._problem_factory.select_problem(name)
@@ -253,13 +263,15 @@ class RunFactory:
 
     def build(self) -> _jobs.Run:
         problem = self._problem_factory.get_problem()
+        assert is_any_optimizable(problem), problem.unwrapped
         params = self._build_params(problem)
-        if is_function_optimizable(problem):
-            if self.skeleton_points is None or not np.shape(self.skeleton_points):
-                raise CannotStartRun("no skeleton points selected")
-        return _jobs.Run(params, self.skeleton_points)
+        try:
+            skeleton_points = gather_skeleton_points(problem, self.skeleton_points)
+        except Exception as exc:
+            raise CannotStartRun("bad skeleton point selection") from exc
+        return _jobs.Run(params, skeleton_points)
 
-    def _build_params(self, problem: coi.Problem) -> _jobs.RunParams:
+    def _build_params(self, problem: AnyOptimizable) -> _jobs.RunParams:
         assert is_any_optimizable(problem), problem.unwrapped
         if self.render_mode:
             allowed_render_modes = self._problem_factory.get_metadata().render_modes

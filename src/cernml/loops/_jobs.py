@@ -19,6 +19,7 @@ from cernml.coi import Problem, cancellation
 
 from . import _callbacks as _cb
 from . import _catching, _constraints, _interfaces
+from ._skeleton_points import SkeletonPoints
 
 if t.TYPE_CHECKING:  # pragma: no cover
     # pylint: disable = import-error, unused-import, ungrouped-imports
@@ -79,13 +80,11 @@ class RunParams:
 
 
 class Run:
-    def __init__(
-        self, run_params: RunParams, skeleton_points: t.Optional[np.ndarray]
-    ) -> None:
+    def __init__(self, run_params: RunParams, skeleton_points: SkeletonPoints) -> None:
         self._data = run_params
         self._runner: _AbstractRunner
         if _interfaces.is_function_optimizable(run_params.problem):
-            assert skeleton_points is not None
+            assert skeleton_points
             self._runner = _FunctionOptimizableRunner(
                 run_params,
                 skeleton_points=skeleton_points,
@@ -352,10 +351,10 @@ class _SingleOptimizableRunner(_AbstractRunner):
 
 
 class _FunctionOptimizableRunner(_AbstractRunner):
-    def __init__(self, data: RunParams, skeleton_points: np.ndarray) -> None:
+    def __init__(self, data: RunParams, skeleton_points: SkeletonPoints) -> None:
         super().__init__(data)
         assert np.shape(skeleton_points), skeleton_points
-        self.skeleton_points = tuple(skeleton_points)
+        self.skeleton_points = skeleton_points
         self._current_point: t.Optional[float] = None
         self._initial_points = self._get_initial_points()
 

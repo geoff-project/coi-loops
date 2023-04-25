@@ -71,7 +71,7 @@ known_first_party = ['cernml']
 
 [tool.pytest.ini_options]
 addopts = '--doctest-modules'
-testpaths = ['src']
+testpaths = ['src', 'tests']
 
 [tool.pylint.format]
 ignore-long-lines = '<?https?://\S+>?$'
