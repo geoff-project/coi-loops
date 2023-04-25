@@ -1,10 +1,61 @@
 [build-system]
 requires = [
-    'setuptools >= 42',
-    'setuptools-scm[toml] ~= 5.0',
+    'pip >= 22',
+    'setuptools >= 45',
+    'setuptools-scm[toml] ~= 7.0',
     'wheel',
 ]
 build-backend = 'setuptools.build_meta'
+
+[project]
+dynamic = ['version']
+name = 'cernml-coi-loops'
+authors = [
+    {name = 'Nico Madysa', email = 'nico.madysa@cern.ch'},
+]
+description = 'Optimization Loops for the Common Optimization Interfaces'
+readme = 'README.md'
+license = {text='Other/Proprietary License'}
+dependencies = [
+    'cernml-coi ~=0.8.9',
+]
+classifiers = [
+    'Development Status :: 3 - Alpha',
+    'Environment :: Console',
+    'Intended Audience :: Science/Research',
+    'License :: Other/Proprietary License',
+    'Topic :: Scientific/Engineering :: Artificial Intelligence',
+    'Topic :: Scientific/Engineering :: Physics',
+    'Natural Language :: English',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3 :: Only',
+]
+
+[project.urls]
+gitlab = 'https://gitlab.cern.ch/geoff/cerml-coi-loops'
+
+[project.optional-dependencies]
+cernml-es = ['cernml-extremum-seeking ~= 2.0']
+bobyqa = ['Py-BOBYQA ~= 1.2']
+skopt = ['scikit-optimize ~= 0.9.0']
+all = ['cernml-coi-loops[cernml-es,bobyqa,skopt]']
+test = [
+    'cernml-coi-loops[all]',
+    'pytest',
+    'pytest-cov',
+]
+examples = [
+    'cernml-coi-loops[all]',
+    'matplotlib ~= 3.0',
+]
+lint = [
+    'black',
+    'mypy',
+    'pycodestyle',
+    'pylint',
+]
 
 [tool.setuptools_scm]
 
@@ -20,17 +71,34 @@ known_first_party = ['cernml']
 addopts = '--doctest-modules'
 testpaths = ['src']
 
-[tool.pylint.FORMAT]
+[tool.pylint.format]
 ignore-long-lines = '<?https?://\S+>?$'
 
-[tool.pylint.REPORTS]
+[tool.pylint.reports]
 reports = false
 score = false
 
-[tool.pylint.'MESSAGES CONTROL']
+[tool.pylint.'messages control']
 disable = [
     'fixme',
     'similarities',
     'missing-class-docstring',
     'missing-function-docstring',
 ]
+
+[tool.mypy]
+disallow_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = [
+    'numpy.*',
+    'pybobyqa.*',
+    'scipy.*',
+    'skopt.*',
+    'gym.*',
+    'matplotlib.*',
+    'setuptools.*',
+    'setuptools_scm.*',
+    'pyjapc.*',
+]
+ignore_missing_imports = true
