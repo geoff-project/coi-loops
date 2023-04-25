@@ -98,13 +98,13 @@ def configure_optimizer(
     if isinstance(factory, coi.Configurable):
         config: coi.Config = factory.get_config()
         raw_values = {field.dest: field.value for field in config.fields()}
-        overrides = dict(
-            objfun_has_noise=True,
-            min_objective=0.05,
-            verbose=False,
-            n_calls=30,
-            maxfun=30,
-        )
+        overrides = {
+            "objfun_has_noise": True,
+            "min_objective": 0.05,
+            "verbose": False,
+            "n_calls": 30,
+            "maxfun": 30,
+        }
         for key, new_value in overrides.items():
             if key in raw_values:
                 raw_values[key] = new_value

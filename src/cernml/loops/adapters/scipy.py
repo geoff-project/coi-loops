@@ -43,7 +43,11 @@ class Cobyla(OptimizerFactory, coi.Configurable):
                 method="COBYLA",
                 x0=x_0,
                 constraints=constraints,
-                options=dict(maxiter=self.maxfun, rhobeg=self.rhobeg, tol=self.rhoend),
+                options={
+                    "maxiter": self.maxfun,
+                    "rhobeg": self.rhobeg,
+                    "tol": self.rhoend,
+                },
             )
             return OptimizeResult(
                 x=res.x,
@@ -112,11 +116,11 @@ class NelderMead(OptimizerFactory, coi.Configurable):
                 x0=x_0,
                 tol=self.tolerance,
                 bounds=bounds,
-                options=dict(
-                    maxfev=self.maxfun,
-                    adaptive=self.adaptive,
-                    initial_simplex=self._build_simplex(x_0),
-                ),
+                options={
+                    "maxfev": self.maxfun,
+                    "adaptive": self.adaptive,
+                    "initial_simplex": self._build_simplex(x_0),
+                },
             )
             return OptimizeResult(
                 x=res.x,
@@ -216,10 +220,10 @@ class Powell(OptimizerFactory, coi.Configurable):
                 x0=x_0,
                 tol=self.tolerance,
                 bounds=bounds,
-                options=dict(
-                    maxfev=self.maxfun,
-                    direc=self.initial_step_size * np.eye(len(x_0)),
-                ),
+                options={
+                    "maxfev": self.maxfun,
+                    "direc": self.initial_step_size * np.eye(len(x_0)),
+                },
             )
             return OptimizeResult(
                 x=res.x,
