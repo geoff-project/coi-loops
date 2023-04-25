@@ -84,14 +84,14 @@ class Run:
     ) -> None:
         self._data = run_params
         self._runner: _AbstractRunner
-        if isinstance(run_params.problem.unwrapped, _interfaces.FunctionOptimizable):
+        if _interfaces.is_function_optimizable(run_params.problem):
             assert skeleton_points is not None
             self._runner = _FunctionOptimizableRunner(
                 run_params,
                 skeleton_points=skeleton_points,
             )
-        assert isinstance(
-            run_params.problem.unwrapped, _interfaces.SingleOptimizable
+        assert _interfaces.is_single_optimizable(
+            run_params.problem
         ), run_params.problem.unwrapped
         self._runner = _SingleOptimizableRunner(run_params)
 

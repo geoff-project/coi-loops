@@ -12,6 +12,7 @@ from cernml import coi
 from cernml.coi.cancellation import TokenSource
 
 from . import _callbacks, _jobs
+from ._interfaces import is_function_optimizable, is_any_optimizable
 
 if t.TYPE_CHECKING:  # pragma: no cover
     # pylint: disable = import-error, unused-import, ungrouped-imports
@@ -253,15 +254,13 @@ class RunFactory:
     def build(self) -> _jobs.Run:
         problem = self._problem_factory.get_problem()
         params = self._build_params(problem)
-        if isinstance(problem.unwrapped, coi.FunctionOptimizable):
+        if is_function_optimizable(problem):
             if self.skeleton_points is None or not np.shape(self.skeleton_points):
                 raise CannotStartRun("no skeleton points selected")
         return _jobs.Run(params, self.skeleton_points)
 
     def _build_params(self, problem: coi.Problem) -> _jobs.RunParams:
-        assert isinstance(
-            problem.unwrapped, (coi.SingleOptimizable, coi.FunctionOptimizable)
-        ), problem.unwrapped
+        assert is_any_optimizable(problem), problem.unwrapped
         if self.render_mode:
             allowed_render_modes = self._problem_factory.get_metadata().render_modes
             if self.render_mode not in allowed_render_modes:
