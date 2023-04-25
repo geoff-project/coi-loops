@@ -15,7 +15,14 @@ from . import _callbacks, _jobs
 
 if t.TYPE_CHECKING:  # pragma: no cover
     # pylint: disable = import-error, unused-import, ungrouped-imports
+    import sys
+
     from .adapters import OptimizerFactory  # pragma: no cover
+
+    if sys.version_info >= (3, 11):
+        from typing import Self
+    else:
+        from typing_extensions import Self
 
 LOG = getLogger(__name__)
 
@@ -86,9 +93,6 @@ class Metadata(t.Mapping[str, t.Any]):
 
 
 class ProblemKwargsSpec(t.Collection[str]):
-
-    Self = t.TypeVar("Self", bound="ProblemKwargsSpec")
-
     def __init__(self) -> None:
         self._spec: t.Dict[str, t.Optional[str]] = {}
 

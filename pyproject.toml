@@ -55,6 +55,8 @@ lint = [
     'mypy',
     'pycodestyle',
     'pylint',
+    # For `typing.Self`:
+    'typing-extensions>=4.0; python_version<"3.11"',
 ]
 
 [tool.setuptools_scm]
