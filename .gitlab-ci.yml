@@ -20,7 +20,7 @@ build_wheel:
 
 test_lint:
   extends:
-    - .acc_py_dev_test
+    - .acc_py_run_on_manylinux_py_version
     - .acc_py_run_on_all_currently_supported
   stage: test
   before_script:
