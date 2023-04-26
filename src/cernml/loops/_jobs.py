@@ -23,7 +23,7 @@ from ._skeleton_points import SkeletonPoints
 
 if t.TYPE_CHECKING:  # pragma: no cover
     # pylint: disable = import-error, unused-import, ungrouped-imports
-    from .adapters import OptimizerFactory  # pragma: no cover
+    from .adapters import OptimizerFactory
 
 
 LOG = getLogger(__name__)

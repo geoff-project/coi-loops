@@ -14,7 +14,7 @@ from . import Objective, OptimizeResult, OptimizerFactory, SolveFunc, register
 
 if t.TYPE_CHECKING:  # pragma: no cover
     # pylint: disable = unused-import
-    from scipy.optimize import Bounds  # pragma: no cover
+    from scipy.optimize import Bounds
 
 __all__ = [
     "Cobyla",

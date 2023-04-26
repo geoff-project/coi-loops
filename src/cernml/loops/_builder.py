@@ -18,7 +18,7 @@ if t.TYPE_CHECKING:  # pragma: no cover
     # pylint: disable = import-error, unused-import, ungrouped-imports
     import sys
 
-    from .adapters import OptimizerFactory  # pragma: no cover
+    from .adapters import OptimizerFactory
 
     if sys.version_info >= (3, 11):
         from typing import Self

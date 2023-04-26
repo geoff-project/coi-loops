@@ -10,7 +10,7 @@ import typing as t
 
 from cernml.coi import FunctionOptimizable, Problem, SingleOptimizable
 
-if t.TYPE_CHECKING:
+if t.TYPE_CHECKING:  # pragma: no cover
     import sys
 
     if sys.version_info >= (3, 10):

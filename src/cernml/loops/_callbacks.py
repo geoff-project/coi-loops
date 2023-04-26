@@ -12,7 +12,7 @@ import numpy as np
 
 if t.TYPE_CHECKING:  # pragma: no cover
     # pylint: disable = import-error, unused-import, ungrouped-imports
-    from .adapters import OptimizeResult  # pragma: no cover
+    from .adapters import OptimizeResult
 
 
 class ExplicitAction(enum.Enum):

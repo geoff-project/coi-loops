@@ -12,9 +12,9 @@ from . import Objective, OptimizeResult, OptimizerFactory, SolveFunc, register
 
 if t.TYPE_CHECKING:  # pragma: no cover
     # pylint: disable = unused-import
-    from scipy.optimize import Bounds  # pragma: no cover
+    from scipy.optimize import Bounds
 
-    from .._constraints import Constraint  # pragma: no cover
+    from .._constraints import Constraint
 
 __all__ = [
     "ExtremumSeeking",
