@@ -1,4 +1,10 @@
-"""Adapter to reduce the number of evaluations of the constraints functions.
+# SPDX-FileCopyrightText: 2020-2023 CERN
+# SPDX-FileCopyrightText: 2023 GSI Helmholtzzentrum für Schwerionenforschung
+# SPDX-FileNotice: All rights not expressly granted are reserved.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later OR EUPL-1.2+
+
+"""Adapter to reduce the number of constraints function evaluations.
 
 Given how COBYLA operates, the usefulness of this class is dubious.
 """

@@ -1,3 +1,9 @@
+# SPDX-FileCopyrightText: 2020-2023 CERN
+# SPDX-FileCopyrightText: 2023 GSI Helmholtzzentrum für Schwerionenforschung
+# SPDX-FileNotice: All rights not expressly granted are reserved.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later OR EUPL-1.2+
+
 """Factory pattern for :class:`Run`."""
 
 from __future__ import annotations
@@ -55,7 +61,8 @@ class CannotStartRun(Exception):
 class Metadata(t.Mapping[str, t.Any]):
     """Dataclass that reads problem metadata with fallback.
 
-    This ensures that we use the right fallbacks and don't make any typos.
+    This ensures that we use the right fallbacks and don't make any
+    typos.
     """
 
     def __init__(self, metadata_holder: t.Union[t.Type[coi.Problem], EnvSpec]) -> None:

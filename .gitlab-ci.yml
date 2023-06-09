@@ -1,3 +1,9 @@
+# SPDX-FileCopyrightText: 2020-2023 CERN
+# SPDX-FileCopyrightText: 2023 GSI Helmholtzzentrum für Schwerionenforschung
+# SPDX-FileNotice: All rights not expressly granted are reserved.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later OR EUPL-1.2+
+
 include:
   - project: acc-co/devops/python/acc-py-gitlab-ci-templates
     file: v2/python.gitlab-ci.yml
@@ -28,7 +34,7 @@ test_lint:
     - python -m pip install ${project_root}[lint]
   script:
     - cd ${project_root}
-    - ./run_linters.sh ./src ./examples ./tests
+    - ./run_linters.sh --print-versions
 
 test_dev:
   extends:

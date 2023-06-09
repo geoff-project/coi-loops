@@ -1,3 +1,9 @@
+# SPDX-FileCopyrightText: 2020-2023 CERN
+# SPDX-FileCopyrightText: 2023 GSI Helmholtzzentrum für Schwerionenforschung
+# SPDX-FileNotice: All rights not expressly granted are reserved.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later OR EUPL-1.2+
+
 """Provides a buffer of steps taken during a run.
 
 By saving both the iteration number and a timestamp, these buffers allow
@@ -186,7 +192,8 @@ class StepBuffer(t.Sequence[Step]):
         if isinstance(key, (int, np.integer)):
             return self._buffer[key]
         if isinstance(key, slice):
-            # Special-case slice, using _normalize_key() would be slower.
+            # Special-case slice, using _normalize_key() would be
+            # slower.
             result = StepBuffer()
             result._buffer = self._buffer[key]
             return result

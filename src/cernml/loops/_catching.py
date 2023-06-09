@@ -1,3 +1,9 @@
+# SPDX-FileCopyrightText: 2020-2023 CERN
+# SPDX-FileCopyrightText: 2023 GSI Helmholtzzentrum für Schwerionenforschung
+# SPDX-FileNotice: All rights not expressly granted are reserved.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later OR EUPL-1.2+
+
 """Provide `catching_exceptions()` for use in runner threads."""
 
 from __future__ import annotations
@@ -53,8 +59,9 @@ def catching_exceptions(
         yield
         logger.info(f"finished {name}")
         on_success()
-        # Catch weird race conditions: If we successfully run through and a
-        # cancellation arrives _just_ after, we automatically complete it.
+        # Catch weird race conditions: If we successfully run through
+        # and a cancellation arrives _just_ after, we automatically
+        # complete it.
         if token_source.token.cancellation_requested:
             token_source.token.complete_cancellation()
             token_source.reset_cancellation()

@@ -1,23 +1,46 @@
-#!/usr/bin/env sh
+#!/bin/bash
 
-### Run all linters used by this project. This script is used in CI.
-### Its main use is that it runs _all_ linters, even if one of them errors.
+# SPDX-FileCopyrightText: 2020-2023 CERN
+# SPDX-FileCopyrightText: 2023 GSI Helmholtzzentrum für Schwerionenforschung
+# SPDX-FileNotice: All rights not expressly granted are reserved.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later OR EUPL-1.2+
 
-if [ $# -eq 0 ]; then
-    echo >&2 "Usage $0 SRC_PATH"
-    echo >&2 ''
-    echo >&2 'Run all linters on given path, even if one fails.'
-    echo >&2 'error: no source path passed (usually ./src/)'
+# This script runs all relevant linters with the correct arguments. If one of
+# them fails, the script continues running the rest. Only at the end does the
+# script determine whether it has failed or not.
+
+if [[ "$*" ]]; then
+  if [[ "$*" == --print-versions ]]; then
+    reuse --version
+    black --version
+    isort --version
+    pycodestyle --version
+    mypy --version
+    pylint --version
+  else
+    echo "Usage: $0 [--print-versions]"
     exit 1
+  fi
 fi
 
 exit_code=0
-for cmd in "mypy" "black --check" "isort --check" "pylint"; do
-  echo "Running $cmd ..."
-  python -m $cmd "$@"
-  # Use bitwise OR instead of addition to accumulate exit codes.
-  # Exit codes are 8 bits wide and must not overflow to zero.
-  exit_code="$((exit_code | $?))"
-done
 
-exit "$exit_code"
+reuse lint || exit_code=$((exit_code | $?))
+
+black --check . || exit_code=$((exit_code | $?))
+
+isort --check . || exit_code=$((exit_code | $?))
+
+flake8 src/ examples/ tests/ || exit_code=$((exit_code | $?))
+
+# Split out src/ checking to prevent error "Source file found twice under
+# different module names" when using editable installs.
+mypy src/ || exit_code=$((exit_code | $?))
+mypy examples/ tests/ || exit_code=$((exit_code | $?))
+
+pylint --reports=no --score=no src/ || exit_code=$((exit_code | $?))
+pylint --reports=no --score=no tests/*.py || exit_code=$((exit_code | $?))
+pylint --reports=no --score=no examples/*.py || exit_code=$((exit_code | $?))
+
+exit $exit_code
