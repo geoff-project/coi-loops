@@ -24,23 +24,16 @@ build_wheel:
 
 # Test: Run linters and unit tests. Run tests both in-tree and out-of-tree.
 
-test_lint:
-  extends:
-    - .acc_py_run_on_manylinux_py_version
-    - .acc_py_run_on_all_currently_supported
-  stage: test
+test_pre-commit:
+  extends: .acc_py_pre-commit
   before_script:
-    - !reference [.acc_py_dev_test, before_script]
-    - python -m pip install ${project_root}[lint]
-  script:
-    - cd ${project_root}
-    - ./run_linters.sh --print-versions
+    - !reference [.acc_py_pre-commit, before_script]
+    - python -m pip install pylint .[examples]
 
 test_dev:
   extends:
     - .acc_py_dev_test
     - .acc_py_run_on_all_currently_supported
-  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   # Override `script` to change the precise pytest-cov arguments.
   script:
     - cd ${project_root}

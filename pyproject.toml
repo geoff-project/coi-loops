@@ -57,21 +57,6 @@ examples = [
     'cernml-coi-loops[all]',
     'matplotlib ~= 3.0',
 ]
-lint = [
-    'cernml-coi-loops[examples]',
-    'black',
-    'flake8',
-    # Flake8 6.0 doesn't support Python 3.7, so we need to downgrade.
-    # 4.0 and 5.0 have a `importlib-metadata` requirement that conflicts with
-    # gym 0.21.
-    'flake8 < 4; python_version < "3.8"',
-    'flake8-length',
-    'mypy ~= 1.0',
-    'pylint ~= 2.17.0',
-    'reuse',
-    # For `Self` and `TypeGuard`:
-    'typing-extensions>=4.0; python_version<"3.11"',
-]
 
 [tool.setuptools_scm]
 
