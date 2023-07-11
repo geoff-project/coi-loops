@@ -83,6 +83,16 @@ class RunParams:
         problem_class = type(problem)
         return ".".join([problem_class.__module__, problem_class.__qualname__])
 
+    @property
+    def optimizer_id(self) -> str:
+        """The name of the optimization algorithm."""
+        optimizer = self.optimizer
+        spec = getattr(optimizer, "spec", None)
+        if spec:
+            return spec.name
+        opt_class = type(optimizer)
+        return ".".join([opt_class.__module__, opt_class.__qualname__])
+
 
 class Run:
     def __init__(self, run_params: RunParams, skeleton_points: SkeletonPoints) -> None:
@@ -108,6 +118,11 @@ class Run:
     def problem_id(self) -> str:
         """The name of the optimization problem."""
         return self._data.problem_id
+
+    @property
+    def optimizer_id(self) -> str:
+        """The name of the optimization algorithm."""
+        return self._data.optimizer_id
 
     def run_full_optimization(self) -> None:
         self._runner.run_full_optimization()
