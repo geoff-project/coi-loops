@@ -77,14 +77,42 @@ class StepBuffer(t.Sequence[Step]):
         ...         return dist
         >>> coi.register("SimpleEnv-v0", entry_point=SimpleEnv)
 
+    and this example optimizer:
+
+        >>> from cernml import optimizers
+        >>> class RandomSampleOptimizer(optimizers.Optimizer):
+        ...     def __init__(self, maxfun=100):
+        ...         self.maxfun = maxfun
+        ...     def make_solve_func(self, bounds, constraints):
+        ...         maxfun = self.maxfun
+        ...         space = Box(*bounds)
+        ...         def solve(objective, x0):
+        ...             best_x, best_loss = x0, objective(x0)
+        ...             for i in range(1, maxfun):
+        ...                 new_x = space.sample()
+        ...                 new_loss = objective(new_x)
+        ...                 if new_loss < best_loss:
+        ...                     best_x, best_loss = new_x, new_loss
+        ...             return optimizers.OptimizeResult(
+        ...                 x=best_x,
+        ...                 fun=best_loss,
+        ...                 success=True,
+        ...                 message="end of search",
+        ...                 nit=maxfun,
+        ...                 nfev=maxfun,
+        ...             )
+        ...         return solve
+        >>> optimizers.register(
+        ...     "RandomSampleOptimizer", RandomSampleOptimizer
+        ... )
+
     `StepBuffer` can be filled like this:
 
         >>> from cernml import loops
         >>> from cernml.coi.cancellation import TokenSource
-        >>> from cernml.loops.adapters import RandomSampleOptimizer
         >>> factory = loops.RunFactory()
         >>> factory.select_problem("SimpleEnv-v0")
-        >>> factory.optimizer_factory = RandomSampleOptimizer(maxfun=39)
+        >>> factory.optimizer = RandomSampleOptimizer(maxfun=39)
         >>> factory.callback = recorder = RecordSteps("Demo")
         >>> factory.build().run_full_optimization()
         >>> buf = recorder.step_buffer

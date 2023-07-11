@@ -19,7 +19,6 @@ from logging import getLogger
 
 import gym
 import numpy as np
-import scipy.optimize
 
 from cernml.coi import Problem, cancellation
 
@@ -29,7 +28,7 @@ from ._skeleton_points import SkeletonPoints
 
 if t.TYPE_CHECKING:  # pragma: no cover
     # pylint: disable = import-error, unused-import, ungrouped-imports
-    from .adapters import OptimizerFactory
+    from cernml.optimizers import Optimizer
 
 
 LOG = getLogger(__name__)
@@ -39,7 +38,7 @@ class BadInitialPoint(Exception):
     """The initial point has not the correct shape or type."""
 
 
-def validate_x0(array: np.ndarray, bounds: gym.spaces.Box) -> np.ndarray:
+def validate_x0(array: np.ndarray, space: gym.spaces.Box) -> np.ndarray:
     """Raise BadInitialPoint if array is not a flat floating-point array."""
     array = np.asanyarray(array)
     if array.ndim != 1:
@@ -55,8 +54,8 @@ def validate_x0(array: np.ndarray, bounds: gym.spaces.Box) -> np.ndarray:
         raise BadInitialPoint(
             f"bad type: expected a float array, got dtype={array.dtype}"
         )
-    if array not in bounds:
-        raise BadInitialPoint(f"bad point: {array} is not within {bounds}")
+    if array not in space:
+        raise BadInitialPoint(f"bad point: {array} is not within {space}")
     return array
 
 
@@ -68,7 +67,7 @@ class RunParams:
     no longer change once the :class:`Run` object has been created.
     """
 
-    optimizer_factory: OptimizerFactory
+    optimizer: Optimizer
     problem: Problem
     callback: _cb.Callback
     render_mode: t.Optional[str]
@@ -305,10 +304,8 @@ class _SingleOptimizableRunner(_AbstractRunner):
                 constraint_names=tuple(problem.constraint_names),
             )
         )
-        solve = self.data.optimizer_factory.make_solve_func(
-            scipy.optimize.Bounds(
-                self.current_opt_space.low, self.current_opt_space.high
-            ),
+        solve = self.data.optimizer.make_solve_func(
+            (self.current_opt_space.low, self.current_opt_space.high),
             self.wrapped_constraints,
         )
         result = solve(self.run_iteration, x_0.copy())
@@ -401,10 +398,8 @@ class _FunctionOptimizableRunner(_AbstractRunner):
             self._current_point = point
             self.current_opt_space = problem.get_optimization_space(point)
             self.initial_objective = np.nan
-            solve = self.data.optimizer_factory.make_solve_func(
-                scipy.optimize.Bounds(
-                    self.current_opt_space.low, self.current_opt_space.high
-                ),
+            solve = self.data.optimizer.make_solve_func(
+                (self.current_opt_space.low, self.current_opt_space.high),
                 self.wrapped_constraints,
             )
             result = solve(self.run_iteration, x_0.copy())

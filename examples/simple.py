@@ -17,7 +17,7 @@ from matplotlib import pyplot
 
 from cernml import coi, loops
 from cernml.coi import cancellation
-from cernml.loops.adapters.bobyqa import Bobyqa
+from cernml.optimizers.bobyqa import Bobyqa
 
 
 class ExampleEnv(coi.SingleOptimizable):
@@ -106,7 +106,7 @@ def main() -> None:
     )
     factory.select_problem("ExampleEnv-v0")
     factory.set_problem_kwarg("delay_secs", 0.0)
-    factory.optimizer_factory = Bobyqa()
+    factory.optimizer = Bobyqa()
     factory.callback = results = StoreOptimizeResult("Bobyqa")
     job = factory.build()
     for _ in range(args.num_runs):

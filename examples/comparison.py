@@ -16,15 +16,7 @@ import gym
 import numpy as np
 from matplotlib import pyplot
 
-from cernml import coi, loops
-
-# pylint: disable = unused-import
-from cernml.loops.adapters import ALL_OPTIMIZERS
-from cernml.loops.adapters import bobyqa as _opt_bobyqa
-from cernml.loops.adapters import scipy as _opt_scipy
-from cernml.loops.adapters import skopt as _opt_skopt
-
-# pylint: enable = unused-import
+from cernml import coi, loops, optimizers
 
 LOG = logging.getLogger(__name__)
 
@@ -88,21 +80,10 @@ class StoreOptimizeResult(loops.Callback):
         self.num_iterations.append(result.nfev)
 
 
-def get_optimizer_factory(name: str) -> loops.adapters.OptimizerFactory:
-    """Create an optimizer factory by name."""
-    try:
-        factory_type = ALL_OPTIMIZERS[name]
-    except KeyError:
-        raise ValueError(f"{name!r} not in {list(ALL_OPTIMIZERS)}") from None
-    return factory_type()
-
-
-def configure_optimizer(
-    factory: loops.adapters.OptimizerFactory,
-) -> loops.adapters.OptimizerFactory:
+def configure_optimizer(optimizer: optimizers.Optimizer) -> optimizers.Optimizer:
     """Ensure that the configs are comparable."""
-    if isinstance(factory, coi.Configurable):
-        config: coi.Config = factory.get_config()
+    if isinstance(optimizer, coi.Configurable):
+        config: coi.Config = optimizer.get_config()
         raw_values = {field.dest: field.value for field in config.fields()}
         overrides = {
             "objfun_has_noise": True,
@@ -114,14 +95,15 @@ def configure_optimizer(
         for key, new_value in overrides.items():
             if key in raw_values:
                 raw_values[key] = new_value
-        factory.apply_config(config.validate_all(raw_values))
-    return factory
+        optimizer.apply_config(config.validate_all(raw_values))
+    return optimizer
 
 
 def main() -> None:
     """Main function."""
     parser = argparse.ArgumentParser(
-        description=__doc__, epilog=f"Available optimizers: {list(ALL_OPTIMIZERS)}"
+        description=__doc__,
+        epilog=f"Available optimizers: {list(optimizers.registry.keys())}",
     )
     parser.add_argument(
         "-n", "--num-runs", type=int, default=10, help="Number of runs per optimizer"
@@ -142,20 +124,20 @@ def main() -> None:
         "SkoptGpOptimize",
     ]
     if args.optimizers == ["ALL"]:
-        args.optimizers = list(ALL_OPTIMIZERS)
+        args.optimizers = list(optimizers.registry.keys())
     logging.basicConfig(level="WARN")
     factory = loops.RunFactory()
     factory.select_problem("ExampleEnv-v0")
 
     all_results = {
         name: (
-            configure_optimizer(get_optimizer_factory(name)),
+            configure_optimizer(optimizers.make(name)),
             StoreOptimizeResult(name),
         )
         for name in args.optimizers
     }
-    for optimizer_factory, results in all_results.values():
-        factory.optimizer_factory = optimizer_factory
+    for optimizer, results in all_results.values():
+        factory.optimizer = optimizer
         factory.callback = results
         job = factory.build()
         for _ in range(args.num_runs):

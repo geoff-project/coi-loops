@@ -24,7 +24,7 @@ if t.TYPE_CHECKING:  # pragma: no cover
     # pylint: disable = import-error, unused-import, ungrouped-imports
     import sys
 
-    from .adapters import OptimizerFactory
+    from cernml.optimizers import Optimizer
 
     if sys.version_info >= (3, 11):
         from typing import Self
@@ -242,7 +242,7 @@ class RunFactory:
     token_source: TokenSource
     problem_factory: ProblemFactory
     render_mode: t.Optional[str]
-    optimizer_factory: t.Optional[OptimizerFactory]
+    optimizer: t.Optional[Optimizer]
     callback: t.Optional[_callbacks.Callback]
 
     def __init__(self, kwargs_spec: t.Optional[ProblemKwargsSpec] = None) -> None:
@@ -251,7 +251,7 @@ class RunFactory:
         self._problem_factory.set_kwarg("cancellation_token", self.token_source.token)
         self._skeleton_points: t.Tuple[float, ...] = ()
         self.render_mode = None
-        self.optimizer_factory = None
+        self.optimizer = None
         self.callback = None
 
     @property
@@ -287,13 +287,13 @@ class RunFactory:
                     f"unsupported render mode: {self.render_mode!r} "
                     f"(supported: {allowed_render_modes!r})"
                 )
-        if self.optimizer_factory is None:
+        if self.optimizer is None:
             raise CannotStartRun("no optimizer selected")
         callback = self.callback or _callbacks.Callback()
         return _jobs.RunParams(
             token_source=self.token_source,
             callback=callback,
-            optimizer_factory=self.optimizer_factory,
+            optimizer=self.optimizer,
             problem=problem,
             render_mode=self.render_mode,
         )

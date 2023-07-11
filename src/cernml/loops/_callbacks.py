@@ -18,7 +18,7 @@ import numpy as np
 
 if t.TYPE_CHECKING:  # pragma: no cover
     # pylint: disable = import-error, unused-import, ungrouped-imports
-    from .adapters import OptimizeResult
+    from cernml.optimizers import OptimizeResult
 
 
 class ExplicitAction(enum.Enum):
