@@ -91,6 +91,7 @@ def configure_optimizer(optimizer: optimizers.Optimizer) -> optimizers.Optimizer
             "verbose": False,
             "n_calls": 30,
             "maxfun": 30,
+            "max_calls": 3000,
         }
         for key, new_value in overrides.items():
             if key in raw_values:
@@ -118,10 +119,10 @@ def main() -> None:
     )
     args = parser.parse_args()
     args.optimizers = list(args.optimizers) or [
-        "Bobyqa",
-        "Cobyla",
+        "BOBYQA",
+        "COBYLA",
         "Powell",
-        "SkoptGpOptimize",
+        "SkoptBayesian",
     ]
     if args.optimizers == ["ALL"]:
         args.optimizers = list(optimizers.registry.keys())
