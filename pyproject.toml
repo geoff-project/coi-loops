@@ -48,7 +48,10 @@ gitlab = 'https://gitlab.cern.ch/geoff/cerml-coi-loops'
 
 [project.optional-dependencies]
 test = ['pytest', 'pytest-cov']
-examples = ['matplotlib ~= 3.0']
+examples = [
+    'cernml-coi-optimizers[all] ~= 1.0',
+    'matplotlib ~= 3.0',
+]
 
 [tool.setuptools_scm]
 
