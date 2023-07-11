@@ -21,7 +21,7 @@ authors = [
 ]
 description = 'Optimization Loops for the Common Optimization Interfaces'
 readme = 'README.md'
-license = {text='Other/Proprietary License'}
+license = {file='COPYING'}
 dependencies = [
     'cernml-coi ~=0.8.9',
 ]
@@ -29,7 +29,6 @@ classifiers = [
     'Development Status :: 3 - Alpha',
     'Environment :: Console',
     'Intended Audience :: Science/Research',
-    'License :: Other/Proprietary License',
     'Topic :: Scientific/Engineering :: Artificial Intelligence',
     'Topic :: Scientific/Engineering :: Physics',
     'Natural Language :: English',
