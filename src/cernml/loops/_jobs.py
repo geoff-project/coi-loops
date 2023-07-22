@@ -166,6 +166,7 @@ class _AbstractRunner(ABC):
             )
             self.data.callback.run_begin(
                 _cb.RunBeginMessage(
+                    problem_id=self.data.problem_id,
                     render_mode=self.data.render_mode,
                     allowed_render_modes=allowed_render_modes,
                 )

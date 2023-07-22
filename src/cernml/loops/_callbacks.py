@@ -40,6 +40,7 @@ def coerce_action(action: t.Optional[Action]) -> ExplicitAction:
 
 @dataclasses.dataclass(frozen=True)
 class RunBeginMessage:
+    problem_id: str
     render_mode: t.Optional[str] = None
     allowed_render_modes: t.Tuple[str, ...] = ()
 
